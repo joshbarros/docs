@@ -124,6 +124,32 @@ Values containing `#` or `;` must be quoted using `` ` `` or `"""`.
 - `ENABLE_REVERSE_PROXY_AUTO_REGISTRATION`: Enable this to allow auto-registration for reverse authentication.
 - `DISABLE_MINIMUM_KEY_SIZE_CHECK`: Do not check minimum key size with corresponding type.
 - `ENABLE_CAPTCHA`: Enable this to use captcha validation for registration.
+- `REQUIRE_CAPTCHA_FOR_LOGIN`: Enable this to require captcha validation for login. Requires `ENABLE_CAPTCHA = true`.
+- `CAPTCHA_TYPE`: Type of captcha to use. Options: `image`, `recaptcha`, `hcaptcha`, `mcaptcha`, `cfturnstile`.
+- `RECAPTCHA_URL`: Base URL for the reCAPTCHA-compatible service.
+- `RECAPTCHA_SITEKEY`: Public site key for the reCAPTCHA-compatible service.
+- `RECAPTCHA_SECRET`: Private verification secret for the reCAPTCHA-compatible service.
+
+### Custom reCAPTCHA-compatible endpoints
+
+Gitea can use a self-hosted service that implements the reCAPTCHA widget and verification API.
+Set `CAPTCHA_TYPE = recaptcha` and point `RECAPTCHA_URL` at the base path:
+
+```ini
+[service]
+ENABLE_CAPTCHA = true
+REQUIRE_CAPTCHA_FOR_LOGIN = true
+CAPTCHA_TYPE = recaptcha
+RECAPTCHA_URL = https://captcha.example.com/recaptcha/
+RECAPTCHA_SITEKEY = your-public-site-key
+RECAPTCHA_SECRET = your-private-verification-secret
+```
+
+The base URL must end with `/`. Gitea loads the widget script from
+`<RECAPTCHA_URL>api.js` and sends a form-encoded `secret` and `response` to
+`<RECAPTCHA_URL>api/siteverify`. The service must return a JSON response with
+`success: true` for a valid token. Keep `RECAPTCHA_SECRET` in the server configuration and
+never expose it in browser markup.
 
 ## Webhook (`webhook`)
 
